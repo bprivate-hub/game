@@ -3,333 +3,334 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>하늘T와 함께하는 약수·배수 릴레이 게임</title>
-  <!-- Tailwind (CDN). 오프라인 배포가 필요하면 아래 링크를 삭제하고 styles에 있는 CSS만 사용하세요. -->
+  <title>약수·배수 릴레이 게임</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* 오프라인 배포 대비 최소 스타일 (Tailwind 미사용 시 대비) */
-    :root { --bg:#0b1220; --panel:#0f172a; --muted:#94a3b8; --text:#e2e8f0; --accent:#22d3ee; --accent2:#a78bfa; }
-    .no-tw body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Pretendard,Apple SD Gothic Neo,Malgun Gothic,sans-serif}
-    .no-tw .container{max-width:1100px;margin:0 auto;padding:1rem}
-    .no-tw .panel{background:var(--panel);border-radius:1rem;padding:1rem}
-    .no-tw .btn{background:var(--accent);color:#001b1f;border:none;border-radius:.75rem;padding:.6rem 1rem;font-weight:700;cursor:pointer}
-    .no-tw .btn.secondary{background:#1f2937;color:#e5e7eb}
-    .no-tw .grid{display:grid;grid-template-columns:repeat(5, minmax(0,1fr));gap:.6rem}
-    .no-tw .card{display:flex;align-items:center;justify-content:center;aspect-ratio:1/1;border-radius:1rem;border:2px solid #334155;font-weight:800;font-size:2rem;background:#0b1220}
-    .no-tw .card.used{opacity:.35;filter:grayscale(1)}
-    .no-tw .card.valid{outline:3px solid var(--accent2)}
-  </style>
 </head>
 <body class="min-h-screen bg-slate-900 text-slate-100">
   <div class="max-w-6xl mx-auto p-4 md:p-8">
     <header class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6">
       <div>
-        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">하늘T와 함께하는 약수·배수 릴레이 게임</h1>
-        <p class="text-slate-400">같은 숫자 재사용 금지 · 앞선 수의 약수 또는 배수만 선택</p>
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">약수·배수 릴레이 게임</h1>
+        <p class="text-slate-400 text-sm">같은 숫자 재사용 금지 · 앞선 수의 약수 또는 배수만 선택</p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <select id="rangeSelect" class="px-3 py-2 rounded-xl bg-slate-800 border border-slate-700">
+        <select id="rangeSelect" class="px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm">
           <option value="10">범위: 1–10</option>
           <option value="20">범위: 1–20</option>
           <option value="30" selected>범위: 1–30</option>
         </select>
-        <select id="modeSelect" class="px-3 py-2 rounded-xl bg-slate-800 border border-slate-700">
+        <select id="modeSelect" class="px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm">
           <option value="coop" selected>모드: 협력(최장 릴레이)</option>
           <option value="versus">모드: 대전(번갈아 내기)</option>
         </select>
-        <button id="newGameBtn" class="px-4 py-2 rounded-xl bg-cyan-400/90 hover:bg-cyan-400 text-slate-900 font-bold">새 게임</button>
+        <button id="newGameBtn" class="px-4 py-2 rounded-xl bg-cyan-400/90 hover:bg-cyan-400 text-slate-900 font-bold text-sm">
+          새 게임
+        </button>
       </div>
     </header>
 
-    <section class="grid md:grid-cols-[1.2fr,0.8fr] gap-4">
-      <!-- 좌: 보드 -->
-      <div class="p-4 rounded-2xl bg-slate-800/50 ring-1 ring-slate-700/60">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+    <section class="grid md:grid-cols-[1.4fr,0.8fr] gap-4">
+      <!-- 숫자 보드 -->
+      <div class="p-4 rounded-2xl bg-slate-800/60 ring-1 ring-slate-700/60">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div class="flex items-center gap-2">
-            <span class="text-sm text-slate-400">현재 수:</span>
+            <span class="text-xs text-slate-400">현재 수</span>
             <span id="currentNumber" class="text-2xl font-extrabold">—</span>
           </div>
-          <div class="flex items-center gap-2 text-sm">
-            <span class="text-slate-400">연결 가능:</span>
-            <span id="playableCount" class="font-bold">0</span>
-            <span class="text-slate-400">/ 남은:</span>
-            <span id="remainingCount" class="font-bold">0</span>
+          <div class="flex items-center gap-3 text-xs">
+            <div>
+              <span class="text-slate-400">연결 가능</span>
+              <span id="playableCount" class="font-bold ml-1">0</span>
+            </div>
+            <div>
+              <span class="text-slate-400">남은 수</span>
+              <span id="remainingCount" class="font-bold ml-1">0</span>
+            </div>
           </div>
         </div>
-        <div id="board" class="grid grid-cols-5 md:grid-cols-6 lg:grid-cols-10 gap-2"></div>
+        <div id="board" class="grid grid-cols-5 sm:grid-cols-6 lg:grid-cols-10 gap-2">
+          <!-- 숫자 버튼이 JS로 생성됩니다 -->
+        </div>
       </div>
 
-      <!-- 우: 정보/도구 -->
+      <!-- 정보 영역 -->
       <div class="flex flex-col gap-4">
-        <div class="p-4 rounded-2xl bg-slate-800/50 ring-1 ring-slate-700/60">
-          <h2 class="font-bold mb-2">진행 정보</h2>
-          <div class="text-sm leading-7">
-            <div>턴: <span id="turnInfo" class="font-semibold">-</span></div>
+        <div class="p-4 rounded-2xl bg-slate-800/60 ring-1 ring-slate-700/60">
+          <h2 class="font-bold mb-2 text-sm">진행 정보</h2>
+          <div class="text-xs leading-6">
+            <div>모드: <span id="modeLabel" class="font-semibold text-sky-300">협력</span></div>
+            <div>턴: <span id="turnInfo" class="font-semibold text-sky-300">-</span></div>
             <div>체인 길이: <span id="chainLen" class="font-semibold">0</span></div>
-            <div>사용한 수: <span id="usedList" class="font-mono text-slate-300 break-words"></span></div>
+            <div>사용한 수:</div>
+            <div id="usedList" class="font-mono text-[11px] text-slate-200 break-words min-h-[1.5rem]"></div>
           </div>
           <div class="mt-3 flex flex-wrap gap-2">
-            <button id="undoBtn" class="px-3 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600">되돌리기</button>
-            <button id="hintBtn" class="px-3 py-1.5 rounded-xl bg-violet-400/90 hover:bg-violet-400 text-slate-900 font-bold">힌트</button>
-            <button id="exportBtn" class="px-3 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600">로그 복사</button>
+            <button id="undoBtn" class="px-3 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs">
+              되돌리기
+            </button>
           </div>
         </div>
 
-        <div class="p-4 rounded-2xl bg-slate-800/50 ring-1 ring-slate-700/60">
-          <h2 class="font-bold mb-2">이전 게임 기록</h2>
-          <p class="text-xs text-slate-400 mb-2">새 게임을 누르면 아래에 체인이 기록됩니다.</p>
-          <ol id="historyList" class="text-xs text-slate-300 space-y-1 max-h-32 overflow-y-auto list-decimal pl-4"></ol>
-        </div>
-            <div>체인 길이: <span id="chainLen" class="font-semibold">0</span></div>
-            <div>사용한 수: <span id="usedList" class="font-mono text-slate-300 break-words"></span></div>
-          </div>
-          <div class="mt-3 flex flex-wrap gap-2">
-            <button id="undoBtn" class="px-3 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600">되돌리기</button>
-            <button id="hintBtn" class="px-3 py-1.5 rounded-xl bg-violet-400/90 hover:bg-violet-400 text-slate-900 font-bold">힌트</button>
-            <button id="exportBtn" class="px-3 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600">로그 복사</button>
-          </div>
+        <div class="p-4 rounded-2xl bg-slate-800/60 ring-1 ring-slate-700/60">
+          <h2 class="font-bold mb-2 text-sm">이전 게임 기록</h2>
+          <p class="text-[11px] text-slate-400 mb-2">새 게임을 누르면 지금까지의 체인이 아래에 기록됩니다.</p>
+          <ol id="historyList" class="text-[11px] text-slate-300 space-y-1 max-h-32 overflow-y-auto list-decimal pl-4"></ol>
         </div>
 
-        <div class="p-4 rounded-2xl bg-slate-800/50 ring-1 ring-slate-700/60">
-          <h2 class="font-bold mb-2">규칙</h2>
-          <ul class="text-sm text-slate-300 list-disc pl-5 space-y-1">
-            <li>첫 수는 자유롭게 선택.</li>
-            <li>이후에는 직전 수의 <strong>약수</strong> 또는 <strong>배수</strong>만 가능.</li>
-            <li><strong>같은 수는 라운드에서 1회만</strong> 사용(재사용 금지).</li>
-            <li>낼 수 없으면 종료(대전 모드에서는 해당 플레이어 패배).</li>
+        <div class="p-4 rounded-2xl bg-slate-800/60 ring-1 ring-slate-700/60">
+          <h2 class="font-bold mb-2 text-sm">규칙</h2>
+          <ul class="text-[11px] text-slate-300 list-disc pl-4 space-y-1">
+            <li>첫 수는 자유롭게 선택합니다.</li>
+            <li>이후에는 직전 수의 <strong>약수</strong> 또는 <strong>배수</strong>만 선택할 수 있습니다.</li>
+            <li>같은 수는 한 라운드에서 <strong>한 번만</strong> 사용할 수 있습니다.</li>
+            <li>낼 수 있는 수가 없으면 게임이 종료됩니다.<br>대전 모드에서는 해당 플레이어가 패배합니다.</li>
           </ul>
-        </div>
-
-        <div class="p-4 rounded-2xl bg-slate-800/50 ring-1 ring-slate-700/60">
-          <h2 class="font-bold mb-2">전략 팁</h2>
-          <p class="text-sm text-slate-300">합성수로 체인을 길게 만들고, <span class="font-semibold">1</span>은 다리를 놓을 때 <span class="font-semibold">한 번</span>만 쓰는 것이 유리합니다. 소수는 배수 쪽 길이(2p, 3p…)를 확보할 타이밍에 사용해 보세요.</p>
         </div>
       </div>
     </section>
 
-    <footer class="mt-8 text-xs text-slate-500">
-      © 약수·배수 릴레이 · 단일 파일 배포용. 교실에서 바로 투사/사용 가능.
+    <footer class="mt-8 text-[11px] text-slate-500">
+      © 약수·배수 릴레이 게임 — 교실에서 자유롭게 사용 가능합니다.
     </footer>
   </div>
 
+  <!-- 워터마크 -->
+  <div class="fixed bottom-2 right-3 text-[10px] text-slate-500 opacity-70 pointer-events-none select-none">
+    Made by 하늘T
+  </div>
+
   <script>
-  ;(() => {
-    const byId = (id) => document.getElementById(id)
-    const board = byId('board')
-    const rangeSelect = byId('rangeSelect')
-    const modeSelect  = byId('modeSelect')
-    const newGameBtn  = byId('newGameBtn')
-    const undoBtn     = byId('undoBtn')
-    const hintBtn     = byId('hintBtn')
-    const exportBtn   = byId('exportBtn')
+    (function () {
+      const $ = (id) => document.getElementById(id);
 
-    const currentNumberEl = byId('currentNumber')
-    const playableCountEl = byId('playableCount')
-    const remainingCountEl= byId('remainingCount')
-    const chainLenEl      = byId('chainLen')
-    const usedListEl      = byId('usedList')
-    const turnInfoEl      = byId('turnInfo')
+      const boardEl         = $("board");
+      const rangeSelectEl   = $("rangeSelect");
+      const modeSelectEl    = $("modeSelect");
+      const newGameBtnEl    = $("newGameBtn");
+      const undoBtnEl       = $("undoBtn");
 
-    // 상태
-    let N = 30
-    let mode = 'coop' // 'coop' | 'versus'
-    let used = new Set()
-    let chain = []
-    let turn = 0 // 0: A, 1: B (versus에서만 의미)
-    let history = [] // undo용 스냅샷
-    let gameHistory = [] // 완료된 게임 로그
+      const currentNumberEl = $("currentNumber");
+      const playableCountEl = $("playableCount");
+      const remainingCountEl= $("remainingCount");
+      const chainLenEl      = $("chainLen");
+      const usedListEl      = $("usedList");
+      const turnInfoEl      = $("turnInfo");
+      const modeLabelEl     = $("modeLabel");
+      const historyListEl   = $("historyList");
 
-    function isDivisorOrMultiple(a, b) {
-      if (!a || !b) return false
-      return (a % b === 0) || (b % a === 0)
-    }
+      // 게임 상태
+      let N = 30;
+      let mode = "coop"; // "coop" | "versus"
+      let used = new Set();
+      let chain = [];
+      let turn = 0; // 0: A, 1: B (versus 모드에서 사용)
+      let undoStack = [];
+      let gameHistory = [];
 
-    function candidates(last, N, used) {
-      const arr = []
-      for (let k=1;k<=N;k++) {
-        if (used.has(k)) continue
-        if (last == null) { arr.push(k); continue }
-        if (isDivisorOrMultiple(last, k)) arr.push(k)
+      function isDivisorOrMultiple(a, b) {
+        if (!a || !b) return false;
+        return (a % b === 0) || (b % a === 0);
       }
-      return arr
-    }
 
-    function snapshot() {
-      return {
-        N, mode,
-        used: new Set([...used]),
-        chain: [...chain],
-        turn
-      }
-    }
-
-    function restore(s) {
-      N = s.N; mode = s.mode
-      used = new Set([...s.used])
-      chain = [...s.chain]
-      turn = s.turn
-      render()
-    }
-
-    function pushHistory() { history.push(snapshot()) }
-
-    function setRange(n) { N = n; resetGame() }
-    function setMode(m)  { mode = m; resetGame() }
-
-    function resetGame() {
-      used.clear(); chain = []; turn = 0; history = []
-      render()
-    }
-
-    function play(n) {
-      const last = chain.length ? chain[chain.length-1] : null
-      const valid = last == null || isDivisorOrMultiple(last, n)
-      if (used.has(n) || !valid) return
-      pushHistory()
-      used.add(n)
-      chain.push(n)
-      if (mode === 'versus') turn = 1 - turn
-      render()
-      checkEnd()
-    }
-
-    function undo() {
-      if (!history.length) return
-      const s = history.pop(); restore(s)
-    }
-
-    function checkEnd() {
-      const last = chain.length ? chain[chain.length-1] : null
-      const cand = candidates(last, N, used)
-      if (cand.length === 0 && chain.length>0) {
-        const msg = (mode==='versus') ?
-          `종료! 더 이상 낼 수 없습니다. 승자: ${ (turn===1)?'A':'B' }` :
-          `종료! 체인 길이: ${chain.length}`
-        toast(msg)
-      }
-    }
-
-    function toast(text) {
-      const t = document.createElement('div')
-      t.textContent = text
-      t.className = 'fixed left-1/2 -translate-x-1/2 bottom-6 bg-slate-800 text-slate-100 px-4 py-2 rounded-xl border border-slate-700 shadow-xl'
-      document.body.appendChild(t)
-      setTimeout(()=>t.remove(), 2200)
-    }
-
-    function greedyHint(depth=2) {
-      // 간단 탐색: 현재 상태에서 1~2수 앞까지 바라보고 남는 후보 수가 최대가 되도록 추천
-      const last = chain.length ? chain[chain.length-1] : null
-      const cand = candidates(last, N, used)
-      if (cand.length===0) return null
-
-      const scoreMove = (move, d, usedSet, prev) => {
-        const u2 = new Set([...usedSet]); u2.add(move)
-        const next = candidates(move, N, u2)
-        if (d<=1) return next.length
-        let best = 0
-        for (const m of next) {
-          const sc = scoreMove(m, d-1, u2, move)
-          if (sc>best) best=sc
+      function getCandidates(last) {
+        const result = [];
+        for (let k = 1; k <= N; k++) {
+          if (used.has(k)) continue;
+          if (last == null) {
+            result.push(k);
+          } else if (isDivisorOrMultiple(last, k)) {
+            result.push(k);
+          }
         }
-        // 현재 후보 + 최선의 다음 후보 수를 합산 점수로 사용
-        return next.length + best
+        return result;
       }
 
-      let bestMove = cand[0], bestScore=-1
-      for (const m of cand) {
-        const s = scoreMove(m, depth, used, last)
-        if (s>bestScore) { bestScore=s; bestMove=m }
+      function snapshot() {
+        return {
+          N,
+          mode,
+          used: Array.from(used),
+          chain: Array.from(chain),
+          turn
+        };
       }
-      return bestMove
-    }
 
-    function exportLog() {
-      const log = {
-        range: N,
-        mode,
-        chain,
-        length: chain.length,
-        used: [...used]
+      function restore(state) {
+        N = state.N;
+        mode = state.mode;
+        used = new Set(state.used);
+        chain = Array.from(state.chain);
+        turn = state.turn;
+        render();
       }
-      const txt = `약수·배수 릴레이 로그\n범위: 1-${N}\n모드: ${mode==='coop'?'협력':'대전'}\n체인: ${chain.join(' → ')}\n길이: ${chain.length}`
-      navigator.clipboard.writeText(txt).then(()=> toast('로그를 클립보드에 복사했어요.'))
-    }
 
-    function renderHistory() {
-      const listEl = document.getElementById('historyList')
-      if (!listEl) return
-      listEl.innerHTML = ''
-      const games = gameHistory.slice().reverse()
-      games.forEach((g) => {
-        const li = document.createElement('li')
-        li.textContent = '[' + g.range + '] 길이 ' + g.length + ': ' + g.chain.join(' → ')
-        listEl.appendChild(li)
-      })
-    }
+      function pushUndo() {
+        undoStack.push(snapshot());
+      }
 
-    function archiveCurrentGame() {
-      if (chain.length === 0) return
-      gameHistory.push({ range: N, mode, chain: [...chain], length: chain.length })
-      renderHistory()
-    }
+      function handlePlay(num) {
+        const last = chain.length ? chain[chain.length - 1] : null;
+        const valid = (last == null) || isDivisorOrMultiple(last, num);
+        if (used.has(num) || !valid) return;
 
-    function render() {
-      // 상단 정보
-      const last = chain.length ? chain[chain.length-1] : null
-      currentNumberEl.textContent = last ?? '—'
-      chainLenEl.textContent = chain.length
-      usedListEl.textContent = chain.join(', ')
+        pushUndo();
+        used.add(num);
+        chain.push(num);
 
-      // 보드
-      board.innerHTML = ''
-      const cand = candidates(last, N, used)
-      const playables = new Set(cand)
-      for (let k=1;k<=N;k++) {
-        const btn = document.createElement('button')
-        btn.textContent = k
-        btn.className = [
-          'aspect-square rounded-2xl border text-2xl font-extrabold flex items-center justify-center select-none',
-          'transition-all',
-          used.has(k) ? 'opacity-30 border-slate-700 bg-slate-800 line-through' : 'border-slate-700 bg-slate-900 hover:border-slate-500',
-          (!used.has(k) && last!=null && playables.has(k)) ? 'ring-2 ring-violet-300/80' : ''
-        ].join(' ')
-        if (!used.has(k) && (last==null || playables.has(k))) {
-          btn.addEventListener('click', ()=> play(k))
+        if (mode === "versus") {
+          // 턴 교대
+          turn = 1 - turn;
         }
-        board.appendChild(btn)
+
+        render();
+        checkEnd();
       }
 
-      // 수치
-      playableCountEl.textContent = (chain.length?cand.length: (N - used.size))
-      remainingCountEl.textContent = N - used.size
-      turnInfoEl.textContent = (mode==='versus') ? (turn===0? '플레이어 A':'플레이어 B') : '협력'
-    }
-
-    // 초기화
-    rangeSelect.addEventListener('change', (e)=> setRange(parseInt(e.target.value,10)))
-    modeSelect.addEventListener('change', (e)=> setMode(e.target.value))
-    newGameBtn.addEventListener('click', () => { archiveCurrentGame(); resetGame(); })
-    undoBtn.addEventListener('click', undo)
-    hintBtn.addEventListener('click', ()=>{
-      const m = greedyHint(2)
-      if (m==null) return toast('가능한 수가 없어요.')
-      toast(`추천 수: ${m}`)
-      // 살짝 반짝 효과
-      const idx = m-1
-      const el = board.children[idx]
-      if (el) {
-        el.classList.add('ring-4','ring-cyan-300')
-        setTimeout(()=> el.classList.remove('ring-4','ring-cyan-300'), 900)
+      function handleUndo() {
+        if (!undoStack.length) return;
+        const prev = undoStack.pop();
+        restore(prev);
       }
-    })
-    exportBtn.addEventListener('click', exportLog)
 
-    // 시작 설정
-    setRange(parseInt(rangeSelect.value,10))
-    setMode(modeSelect.value)
-    render()
-  })()
+      function resetGame() {
+        used = new Set();
+        chain = [];
+        turn = 0;
+        undoStack = [];
+        render();
+      }
+
+      function archiveCurrentGame() {
+        if (!chain.length) return;
+        gameHistory.push({
+          range: N,
+          mode,
+          chain: Array.from(chain)
+        });
+        renderHistory();
+      }
+
+      function renderHistory() {
+        if (!historyListEl) return;
+        historyListEl.innerHTML = "";
+        const items = gameHistory.slice().reverse();
+        items.forEach((g, idx) => {
+          const li = document.createElement("li");
+          const labelMode = g.mode === "versus" ? "대전" : "협력";
+          li.textContent = `[1–${g.range}, ${labelMode}] 길이 ${g.chain.length}: ` + g.chain.join(" → ");
+          historyListEl.appendChild(li);
+        });
+      }
+
+      function showToast(msg) {
+        const div = document.createElement("div");
+        div.textContent = msg;
+        div.className = "fixed left-1/2 -translate-x-1/2 bottom-6 bg-slate-800 text-slate-100 px-4 py-2 rounded-xl border border-slate-700 shadow-xl text-xs";
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 2200);
+      }
+
+      function checkEnd() {
+        if (!chain.length) return;
+        const last = chain[chain.length - 1];
+        const cand = getCandidates(last);
+        if (cand.length === 0) {
+          if (mode === "versus") {
+            // 방금 둔 사람이 이겼고, 다음 턴으로 표시된 사람이 지는 구조
+            const loser = (turn === 0) ? "플레이어 A" : "플레이어 B";
+            showToast(`종료! 더 이상 낼 수 없습니다. 패배: ${loser}`);
+          } else {
+            showToast(`종료! 체인 길이: ${chain.length}`);
+          }
+        }
+      }
+
+      function render() {
+        const last = chain.length ? chain[chain.length - 1] : null;
+        const cand = getCandidates(last);
+
+        // 상단 정보
+        currentNumberEl.textContent = last == null ? "—" : String(last);
+        playableCountEl.textContent = (last == null) ? (N - used.size) : cand.length;
+        remainingCountEl.textContent = (N - used.size);
+        chainLenEl.textContent = chain.length;
+        usedListEl.textContent = chain.join(", ");
+
+        // 모드/턴 표시
+        if (mode === "coop") {
+          modeLabelEl.textContent = "협력";
+          modeLabelEl.className = "font-semibold text-sky-300";
+          turnInfoEl.textContent = "-";
+          turnInfoEl.className = "font-semibold text-sky-300";
+        } else {
+          modeLabelEl.textContent = "대전";
+          modeLabelEl.className = "font-semibold text-amber-300";
+          const playerLabel = (turn === 0) ? "플레이어 A" : "플레이어 B";
+          const colorClass = (turn === 0) ? "text-emerald-300" : "text-rose-300";
+          turnInfoEl.textContent = playerLabel;
+          turnInfoEl.className = "font-semibold " + colorClass;
+        }
+
+        // 보드 렌더링
+        boardEl.innerHTML = "";
+        const playableSet = new Set(cand);
+
+        // 플레이어별 하이라이트 링 색상
+        let highlightClass = "ring-2 ring-violet-300/80";
+        if (mode === "versus") {
+          highlightClass = (turn === 0)
+            ? "ring-2 ring-emerald-300/80"
+            : "ring-2 ring-rose-300/80";
+        }
+
+        for (let k = 1; k <= N; k++) {
+          const btn = document.createElement("button");
+          btn.textContent = String(k);
+          btn.className = [
+            "aspect-square rounded-2xl border text-lg md:text-xl font-extrabold flex items-center justify-center select-none",
+            "transition-all",
+            used.has(k)
+              ? "opacity-30 border-slate-700 bg-slate-800 line-through"
+              : "border-slate-700 bg-slate-900 hover:border-slate-500"
+          ].join(" ");
+
+          const canPlay = !used.has(k) && (last == null || playableSet.has(k));
+          if (canPlay) {
+            btn.className += " " + highlightClass;
+            btn.addEventListener("click", () => handlePlay(k));
+          }
+
+          boardEl.appendChild(btn);
+        }
+      }
+
+      // 이벤트 바인딩
+      rangeSelectEl.addEventListener("change", (e) => {
+        const v = parseInt(e.target.value, 10) || 10;
+        archiveCurrentGame();
+        N = v;
+        resetGame();
+      });
+
+      modeSelectEl.addEventListener("change", (e) => {
+        const m = e.target.value === "versus" ? "versus" : "coop";
+        archiveCurrentGame();
+        mode = m;
+        resetGame();
+      });
+
+      newGameBtnEl.addEventListener("click", () => {
+        archiveCurrentGame();
+        resetGame();
+      });
+
+      undoBtnEl.addEventListener("click", () => {
+        handleUndo();
+      });
+
+      // 초기 렌더
+      render();
+    })();
   </script>
 </body>
 </html>
